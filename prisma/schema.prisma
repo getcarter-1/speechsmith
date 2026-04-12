@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  projects      Project[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Project {
+  id              String          @id @default(cuid())
+  userId          String
+  title           String
+  groomName       String
+  partnerName     String
+  weddingDate     DateTime?
+  status          ProjectStatus   @default(SETUP)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  speakerProfile  SpeakerProfile?
+  speechBrief     SpeechBrief?
+  eventContext    EventContext?
+  audienceProfile AudienceProfile?
+  coupleProfile   CoupleProfile?
+  groomProfile    GroomProfile?
+  partnerProfile  PartnerProfile?
+  redLines        RedLines?
+  stories         Story[]
+  mediaAssets     MediaAsset[]
+  drafts          Draft[]
+}
+
+enum ProjectStatus {
+  SETUP
+  INTERVIEW
+  MEDIA
+  SAMPLE
+  GENERATING
+  REVIEW
+  REWRITE_1
+  REWRITE_2
+  FINAL
+}
+
+model SpeakerProfile {
+  id                    String   @id @default(cuid())
+  projectId             String   @unique
+  firstName             String?
+  fullName              String?
+  ageRange              String?
+  relationToGroom       String?
+  yearsKnownGroom       String?
+  currentCloseness      String?
+  speakingConfidence    String?
+  naturalSpeakingStyle  String?
+  humourStyle           String?
+  vocabularyComfort     String?
+  deliveryMethod        String?
+  deliveryEnergy        String?
+  writingSample         String?
+  selfDescriptors       String[]
+  othersSeeMe           String[]
+  phrasesToEcho         String[]
+  phrasesToAvoid        String[]
+  uncomfortableTopics   String[]
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  project               Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model SpeechBrief {
+  id                String   @id @default(cuid())
+  projectId         String   @unique
+  targetLengthMins  Int?
+  targetWordCount   Int?
+  tonePrimary       String?
+  toneSecondary     String?
+  formalityLevel    Int?
+  humourLevel       Int?
+  heartfeltLevel    Int?
+  cheekinessLevel   Int?
+  traditionalModern Int?
+  openingThanks
