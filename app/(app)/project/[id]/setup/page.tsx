@@ -38,14 +38,16 @@ export default async function SetupPage({
           </ul>
         </div>
         <div className="flex flex-col gap-3">
-          <Button asChild size="lg">
-            <Link href={`/project/${id}/interview`}>
+          <Link href={`/project/${id}/interview`}>
+            <Button size="lg" className="w-full">
               Start the interview
-            </Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link href="/dashboard">Back to dashboard</Link>
-          </Button>
+            </Button>
+          </Link>
+          <Link href="/dashboard">
+            <Button variant="outline" className="w-full">
+              Back to dashboard
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
