@@ -1,2 +1,5 @@
 [phases.setup]
-nixPkgs = ["nodejs-slim_24", "npm-9_x", "openssl"]
+nixPkgs = ["nodejs_22", "npm-9_x", "openssl"]
+
+[phases.install]
+cmds = ["npm ci --engine-strict=false"]
