@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -55,16 +54,16 @@ model VerificationToken {
 }
 
 model Project {
-  id              String          @id @default(cuid())
+  id              String           @id @default(cuid())
   userId          String
   title           String
   groomName       String
   partnerName     String
   weddingDate     DateTime?
-  status          ProjectStatus   @default(SETUP)
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status          ProjectStatus    @default(SETUP)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   speakerProfile  SpeakerProfile?
   speechBrief     SpeechBrief?
   eventContext    EventContext?
@@ -91,41 +90,249 @@ enum ProjectStatus {
 }
 
 model SpeakerProfile {
+  id                   String   @id @default(cuid())
+  projectId            String   @unique
+  firstName            String?
+  fullName             String?
+  ageRange             String?
+  relationToGroom      String?
+  yearsKnownGroom      String?
+  currentCloseness     String?
+  speakingConfidence   String?
+  naturalSpeakingStyle String?
+  humourStyle          String?
+  vocabularyComfort    String?
+  deliveryMethod       String?
+  deliveryEnergy       String?
+  writingSample        String?
+  selfDescriptors      String[]
+  othersSeeMe          String[]
+  phrasesToEcho        String[]
+  phrasesToAvoid       String[]
+  uncomfortableTopics  String[]
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  project              Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model SpeechBrief {
+  id                 String   @id @default(cuid())
+  projectId          String   @unique
+  targetLengthMins   Int?
+  targetWordCount    Int?
+  tonePrimary        String?
+  toneSecondary      String?
+  formalityLevel     Int?
+  humourLevel        Int?
+  heartfeltLevel     Int?
+  cheekinessLevel    Int?
+  traditionalModern  Int?
+  openingThanks      Boolean  @default(true)
+  includeToast       Boolean  @default(true)
+  shortBackupVersion Boolean  @default(false)
+  printableVersion   Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  project            Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model EventContext {
+  id              String   @id @default(cuid())
+  projectId       String   @unique
+  venueName       String?
+  venueLocation   String?
+  venueType       String?
+  timeOfSpeech    String?
+  speechOrder     String?
+  beforeAfterFood String?
+  roomAtmosphere  String?
+  roomSize        String?
+  micAvailable    Boolean?
+  dressCode       String?
+  specialContext  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model AudienceProfile {
   id                    String   @id @default(cuid())
   projectId             String   @unique
-  firstName             String?
-  fullName              String?
-  ageRange              String?
-  relationToGroom       String?
-  yearsKnownGroom       String?
-  currentCloseness      String?
-  speakingConfidence    String?
-  naturalSpeakingStyle  String?
-  humourStyle           String?
-  vocabularyComfort     String?
-  deliveryMethod        String?
-  deliveryEnergy        String?
-  writingSample         String?
-  selfDescriptors       String[]
-  othersSeeMe           String[]
-  phrasesToEcho         String[]
-  phrasesToAvoid        String[]
-  uncomfortableTopics   String[]
+  audienceSize          String?
+  childrenPresent       Boolean  @default(false)
+  teensPresent          Boolean  @default(false)
+  elderlyPresent        Boolean  @default(false)
+  audienceMix           String?
+  conservatismLevel     Int?
+  workColleaguesPresent Boolean  @default(false)
+  brideSideKnowsSpeaker Boolean  @default(false)
+  internationalGuests   Boolean  @default(false)
+  sensitiveDynamics     String?
+  whoMustLaugh          String?
+  whoMustNotBeOffended  String?
+  desiredEffect         String?
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
   project               Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
-model SpeechBrief {
-  id                String   @id @default(cuid())
-  projectId         String   @unique
-  targetLengthMins  Int?
-  targetWordCount   Int?
-  tonePrimary       String?
-  toneSecondary     String?
-  formalityLevel    Int?
-  humourLevel       Int?
-  heartfeltLevel    Int?
-  cheekinessLevel   Int?
-  traditionalModern Int?
-  openingThanks
+model CoupleProfile {
+  id                 String   @id @default(cuid())
+  projectId          String   @unique
+  relationshipLength String?
+  howTheyMet         String?
+  proposalStory      String?
+  milestones         String?
+  sharedInterests    String[]
+  whatMakesThemWork  String?
+  groomChangedBy     String?
+  admirationPoints   String[]
+  funnyCoupleHabits  String?
+  sweetTraits        String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  project            Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model GroomProfile {
+  id                  String   @id @default(cuid())
+  projectId           String   @unique
+  bestQualities       String[]
+  funniestTraits      String[]
+  harmlessBadHabits   String[]
+  quirks              String[]
+  hobbies             String[]
+  achievements        String[]
+  embarrassments      String[]
+  oldReputation       String?
+  currentReputation   String?
+  friendshipGroupRole String?
+  goodFriendTraits    String[]
+  goodPartnerTraits   String[]
+  husbandReasons      String[]
+  recognisableHabit   String?
+  lovelyTrait         String?
+  teasingMaterial     String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  project             Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model PartnerProfile {
+  id               String   @id @default(cuid())
+  projectId        String   @unique
+  firstImpression  String?
+  howWellKnown     String?
+  worthMentioning  String[]
+  bringsOutInGroom String?
+  humourAllowed    Boolean  @default(false)
+  toneBoundaries   String?
+  complimentStyle  String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  project          Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model RedLines {
+  id                     String   @id @default(cuid())
+  projectId              String   @unique
+  sexualJokesOptIn       Boolean  @default(false)
+  stagDoOptIn            Boolean  @default(false)
+  exReferencesOptIn      Boolean  @default(false)
+  illegalActivityAllowed Boolean  @default(false)
+  drugReferencesAllowed  Boolean  @default(false)
+  swearingAllowed        Boolean  @default(false)
+  innuendoAllowed        Boolean  @default(false)
+  topicsToAvoid          String[]
+  peopleToAvoid          String[]
+  storiesToAvoid         String[]
+  embarrassmentCeiling   Int      @default(3)
+  humourMode             String   @default("mixed_wedding_safe")
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  project                Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Story {
+  id                  String   @id @default(cuid())
+  projectId           String
+  title               String?
+  timePeriod          String?
+  setting             String?
+  peopleInvolved      String[]
+  setup               String?
+  event               String?
+  payoff              String?
+  whatItReveals       String?
+  partnerInvolved     Boolean  @default(false)
+  familySafe          Boolean  @default(true)
+  embarrassmentLevel  Int      @default(1)
+  truthSensitivity    Int      @default(1)
+  embellishmentOk     Boolean  @default(true)
+  storyPriority       Int      @default(2)
+  intendedUse         String?
+  mandatoryDetails    String?
+  funnyScore          Int      @default(3)
+  safeScore           Int      @default(3)
+  personalScore       Int      @default(3)
+  embarrassmentScore  Int      @default(3)
+  representativeScore Int      @default(3)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  project             Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model MediaAsset {
+  id         String   @id @default(cuid())
+  projectId  String
+  fileName   String
+  fileType   String
+  fileSize   Int
+  storageKey String
+  caption    String?
+  aiSummary  String?
+  createdAt  DateTime @default(now())
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Draft {
+  id           String         @id @default(cuid())
+  projectId    String
+  version      Int            @default(1)
+  rewriteRound Int            @default(0)
+  fullText     String?
+  jobId        String?
+  status       DraftStatus    @default(PENDING)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  project      Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sections     DraftSection[]
+}
+
+enum DraftStatus {
+  PENDING
+  GENERATING
+  COMPLETE
+  FAILED
+}
+
+model DraftSection {
+  id          String        @id @default(cuid())
+  draftId     String
+  sectionType String
+  title       String?
+  content     String
+  orderIndex  Int
+  status      SectionStatus @default(PENDING)
+  rewriteNote String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  draft       Draft         @relation(fields: [draftId], references: [id], onDelete: Cascade)
+}
+
+enum SectionStatus {
+  PENDING
+  GOOD
+  DROP
+  REWRITE
+}
