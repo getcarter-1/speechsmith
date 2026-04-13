@@ -71,7 +71,7 @@ export default function InterviewWizard({
         setCurrentStage(nextStage)
         setQuestionIndex(0)
       } else {
-        router.push(`/project/${projectId}/media`)
+        router.push(`/project/${projectId}/sample`)
       }
     } else {
       setQuestionIndex((i) => i + 1)
