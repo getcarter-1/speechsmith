@@ -59,4 +59,10 @@ REQUIREMENTS:
 - Tone: ${parsed.tonePrimary}
 - Humour level: ${parsed.humourLevel}/5
 - Include toast at end: ${parsed.includeToast}
-- Topics to avoid: ${parsed.topicsToAvoid.join(", ") || "
+- Topics to avoid: ${parsed.topicsToAvoid.join(", ") || "none"}
+Write the complete speech now. Write it as spoken text only — no stage directions, 
+no section headers, no formatting. Just the speech as the best man would deliver it.
+`.trim()
+
+  return callAI(systemPrompt, userPrompt, "quality", 0.8)
+}
