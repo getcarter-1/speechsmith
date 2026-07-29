@@ -10,6 +10,9 @@ const adapter = new PrismaPg({ connectionString })
 const prisma = new PrismaClient({ adapter })
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  // Self-hosted (non-Vercel): trust the deployment host and infer the URL
+  // from the request, otherwise Auth.js rejects it with UntrustedHost.
+  trustHost: true,
   adapter: PrismaAdapter(prisma),
   providers: [
     Google({
