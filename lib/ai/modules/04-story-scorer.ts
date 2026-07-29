@@ -1,4 +1,4 @@
-import { callAIJSON } from "@/lib/ai/openai"
+import { callAIJSON } from "../openai"
 import { ParsedInput } from "./01-intake-parser"
 
 export interface ScoredStory {

@@ -1,5 +1,5 @@
-import { callAI } from "@/lib/ai/openai"
-import { buildSharedSystemPrompt } from "@/lib/ai/shared-rules"
+import { callAI } from "../openai"
+import { buildSharedSystemPrompt } from "../shared-rules"
 import { SpeechSegment } from "./11-section-segmenter"
 import { ParsedInput } from "./01-intake-parser"
 

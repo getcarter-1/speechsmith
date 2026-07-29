@@ -1,4 +1,4 @@
-import { runPipeline, PipelineInput } from "@/lib/ai/pipeline"
+import { runPipeline, PipelineInput } from "../../ai/pipeline"
 import { PrismaClient } from "@prisma/client"
 import { PrismaPg } from "@prisma/adapter-pg"
 

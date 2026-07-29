@@ -1,5 +1,5 @@
-import { callAIJSON } from "@/lib/ai/openai"
-import { buildSharedSystemPrompt } from "@/lib/ai/shared-rules"
+import { callAIJSON } from "../openai"
+import { buildSharedSystemPrompt } from "../shared-rules"
 
 export interface ParsedInput {
   speakerName: string

@@ -1,4 +1,4 @@
-import { callAIJSON } from "@/lib/ai/openai"
+import { callAIJSON } from "../openai"
 
 export interface SpeechSegment {
   sectionType: string

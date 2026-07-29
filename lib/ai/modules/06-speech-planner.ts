@@ -1,4 +1,4 @@
-import { callAIJSON } from "@/lib/ai/openai"
+import { callAIJSON } from "../openai"
 import { ParsedInput } from "./01-intake-parser"
 import { StoryScoreResult } from "./04-story-scorer"
 import { SafetyEvaluation } from "./05-audience-safety-evaluator"
