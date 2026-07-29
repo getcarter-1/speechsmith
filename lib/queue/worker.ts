@@ -2,11 +2,24 @@ import { Queue, Worker } from "bullmq"
 import IORedis from "ioredis"
 import { generateDraftJob } from "./jobs/generate-draft"
 
-const connection = new IORedis(process.env.REDIS_URL!, {
-  maxRetriesPerRequest: null,
-})
+let connection: IORedis | undefined
+let generationQueue: Queue | undefined
 
-export const generationQueue = new Queue("speech-generation", { connection })
+function getConnection() {
+  connection ??= new IORedis(process.env.REDIS_URL!, {
+    maxRetriesPerRequest: null,
+  })
+
+  return connection
+}
+
+export function getGenerationQueue() {
+  generationQueue ??= new Queue("speech-generation", {
+    connection: getConnection(),
+  })
+
+  return generationQueue
+}
 
 export function startWorker() {
   const worker = new Worker(
@@ -20,7 +33,7 @@ export function startWorker() {
       })
     },
     {
-      connection,
+      connection: getConnection(),
       concurrency: 2,
     }
   )

@@ -1,6 +1,6 @@
 export type HumourMode = "family_safe" | "mixed_wedding_safe" | "adult_evening_safe"
 
-export const HUMOUR_MODE_CONFIG: Record
+export const HUMOUR_MODE_CONFIG: Record<
   HumourMode,
   {
     label: string

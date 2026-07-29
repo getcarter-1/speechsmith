@@ -1,8 +1,14 @@
 import OpenAI from "openai"
 
-export const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY!,
-})
+let openai: OpenAI | undefined
+
+function getOpenAI() {
+  openai ??= new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  })
+
+  return openai
+}
 
 export const FAST_MODEL = "gpt-4o-mini"
 export const QUALITY_MODEL = "gpt-4o"
@@ -13,7 +19,7 @@ export async function callAI(
   model: "fast" | "quality" = "fast",
   temperature: number = 0.7
 ): Promise<string> {
-  const response = await openai.chat.completions.create({
+  const response = await getOpenAI().chat.completions.create({
     model: model === "fast" ? FAST_MODEL : QUALITY_MODEL,
     temperature,
     messages: [
@@ -31,7 +37,7 @@ export async function callAIJSON<T>(
   model: "fast" | "quality" = "fast",
   temperature: number = 0.3
 ): Promise<T> {
-  const response = await openai.chat.completions.create({
+  const response = await getOpenAI().chat.completions.create({
     model: model === "fast" ? FAST_MODEL : QUALITY_MODEL,
     temperature,
     response_format: { type: "json_object" },

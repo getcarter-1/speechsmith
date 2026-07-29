@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth/config"
 import { NextResponse } from "next/server"
-import { generationQueue } from "@/lib/queue/worker"
+import { getGenerationQueue } from "@/lib/queue/worker"
 import { PrismaClient } from "@prisma/client"
 import { PrismaPg } from "@prisma/adapter-pg"
 
@@ -18,7 +18,8 @@ export async function GET(
   }
 
   const { jobId } = await params
-  const job = await generationQueue.getJob(jobId)
+  const queue = getGenerationQueue()
+  const job = await queue.getJob(jobId)
 
   if (!job) {
     return NextResponse.json({ error: "Job not found" }, { status: 404 })
@@ -26,7 +27,7 @@ export async function GET(
 
   const state = await job.getState()
   const progress = job.progress as number ?? 0
-  const logs = await job.logs(0)
+  const logs = await queue.getJobLogs(jobId, 0)
 
   const latestLog = logs.logs[logs.logs.length - 1] ?? "Starting..."
 

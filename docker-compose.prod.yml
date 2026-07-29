@@ -1,0 +1,68 @@
+services:
+  app:
+    image: speechsmith-app:prod
+    build:
+      context: .
+      target: runner
+    command: npm run start
+    env_file:
+      - .env.local
+    environment:
+      DATABASE_URL: postgresql://speechsmith:speechsmith@postgres:5432/speechsmith
+      REDIS_URL: redis://redis:6379
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    image: speechsmith-worker:prod
+    build:
+      context: .
+      target: runner
+    command: npm run worker
+    env_file:
+      - .env.local
+    environment:
+      DATABASE_URL: postgresql://speechsmith:speechsmith@postgres:5432/speechsmith
+      REDIS_URL: redis://redis:6379
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: speechsmith
+      POSTGRES_PASSWORD: speechsmith
+      POSTGRES_DB: speechsmith
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U speechsmith -d speechsmith"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
+  redis_data:

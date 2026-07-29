@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth/config"
 import { NextResponse } from "next/server"
 import { PrismaClient } from "@prisma/client"
 import { PrismaPg } from "@prisma/adapter-pg"
-import { generationQueue } from "@/lib/queue/worker"
+import { getGenerationQueue } from "@/lib/queue/worker"
 
 const connectionString = process.env.DATABASE_URL!
 const adapter = new PrismaPg({ connectionString })
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
     data: { status: "GENERATING" },
   })
 
-  const job = await generationQueue.add("generate", {
+  const job = await getGenerationQueue().add("generate", {
     projectId,
     draftId: draft.id,
   })

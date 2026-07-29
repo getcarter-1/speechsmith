@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth/config"
 import { getProjectById } from "@/lib/db/queries/projects"
 import { redirect } from "next/navigation"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 
 export default async function ReviewPage({
   params,
@@ -25,9 +25,9 @@ export default async function ReviewPage({
           The full draft review and rewrite system is coming in Phase E. 
           For now your project is saved and ready.
         </p>
-        <Button asChild>
-          <Link href="/dashboard">Back to dashboard</Link>
-        </Button>
+        <Link className={buttonVariants()} href="/dashboard">
+          Back to dashboard
+        </Link>
       </div>
     </div>
   )

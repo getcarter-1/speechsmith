@@ -1,0 +1,86 @@
+services:
+  app:
+    image: speechsmith-app:dev
+    build:
+      context: .
+      target: dev
+    command: sh -c "npx prisma generate && npm run dev -- --hostname 0.0.0.0"
+    env_file:
+      - .env.local
+    environment:
+      DATABASE_URL: postgresql://speechsmith:speechsmith@postgres:5432/speechsmith
+      REDIS_URL: redis://redis:6379
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      NODE_ENV: development
+      NEXT_TELEMETRY_DISABLED: "1"
+      WATCHPACK_POLLING: "true"
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    volumes:
+      - .:/app
+      - app_node_modules:/app/node_modules
+      - app_next:/app/.next
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    image: speechsmith-worker:dev
+    build:
+      context: .
+      target: dev
+    command: sh -c "npx prisma generate && npm run worker:dev"
+    env_file:
+      - .env.local
+    environment:
+      DATABASE_URL: postgresql://speechsmith:speechsmith@postgres:5432/speechsmith
+      REDIS_URL: redis://redis:6379
+      NODE_ENV: development
+      NEXT_TELEMETRY_DISABLED: "1"
+    volumes:
+      - .:/app
+      - worker_node_modules:/app/node_modules
+      - worker_next:/app/.next
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: speechsmith
+      POSTGRES_PASSWORD: speechsmith
+      POSTGRES_DB: speechsmith
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U speechsmith -d speechsmith"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  app_node_modules:
+  app_next:
+  worker_node_modules:
+  worker_next:
+  postgres_data:
+  redis_data:
