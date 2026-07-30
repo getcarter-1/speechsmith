@@ -49,7 +49,7 @@ export default async function MediaPage({
 
         {/* Navigation */}
         <div className="flex items-center justify-between mt-8">
-          <Link href={`/project/${id}/interview`}>
+          <Link href={`/project/${id}/stories`}>
             <Button variant="ghost">← Back</Button>
           </Link>
           <div className="flex gap-3">
