@@ -654,14 +654,26 @@ export function getStageIndex(stage: InterviewStage): number {
 
 export function getNextStage(stage: InterviewStage): InterviewStage | null {
   const index = getStageIndex(stage)
-  if (index === -1 || index === INTERVIEW_STAGES.length - 1) return null
-  return INTERVIEW_STAGES[index + 1].id
+  if (index === -1) return null
+  // Skip any stage that has no questions yet (e.g. "stories"), otherwise the
+  // wizard would land on an empty stage and render nothing (blank screen).
+  for (let i = index + 1; i < INTERVIEW_STAGES.length; i++) {
+    if (getQuestionsByStage(INTERVIEW_STAGES[i].id).length > 0) {
+      return INTERVIEW_STAGES[i].id
+    }
+  }
+  return null
 }
 
 export function getPreviousStage(stage: InterviewStage): InterviewStage | null {
   const index = getStageIndex(stage)
   if (index <= 0) return null
-  return INTERVIEW_STAGES[index - 1].id
+  for (let i = index - 1; i >= 0; i--) {
+    if (getQuestionsByStage(INTERVIEW_STAGES[i].id).length > 0) {
+      return INTERVIEW_STAGES[i].id
+    }
+  }
+  return null
 }
 
 export function getRequiredQuestions(): Question[] {
