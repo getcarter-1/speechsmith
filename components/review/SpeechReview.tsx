@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -22,8 +21,11 @@ interface ReviewSection {
 interface SpeechReviewProps {
   projectId: string
   groomName: string
+  rewriteRound: number
   sections: ReviewSection[]
 }
+
+const MAX_REWRITE_ROUNDS = 2
 
 const statusBadge: Record<
   SectionStatus,
@@ -42,18 +44,22 @@ function prettifyType(type: string) {
 export default function SpeechReview({
   projectId,
   groomName,
+  rewriteRound,
   sections: initialSections,
 }: SpeechReviewProps) {
-  const router = useRouter()
   const [sections, setSections] = useState<ReviewSection[]>(initialSections)
   const [savingId, setSavingId] = useState<string | null>(null)
-  const [isFinishing, setIsFinishing] = useState(false)
+  const [working, setWorking] = useState<string | null>(null)
+  const [error, setError] = useState("")
 
   const reviewedCount = sections.filter((s) => s.status !== "PENDING").length
   const allReviewed = reviewedCount === sections.length
+  const rewriteCount = sections.filter((s) => s.status === "REWRITE").length
+  const canRewrite = rewriteRound < MAX_REWRITE_ROUNDS
+  const willRewrite = rewriteCount > 0 && canRewrite
   const counts = {
     good: sections.filter((s) => s.status === "GOOD").length,
-    rewrite: sections.filter((s) => s.status === "REWRITE").length,
+    rewrite: rewriteCount,
     drop: sections.filter((s) => s.status === "DROP").length,
   }
 
@@ -100,15 +106,52 @@ export default function SpeechReview({
     }
   }
 
-  const handleFinish = () => {
-    // E2 will turn this into "start the rewrite round"; for now the review
-    // decisions are already saved, so return to the dashboard.
-    setIsFinishing(true)
-    router.push("/dashboard")
+  const handleContinue = async () => {
+    if (!allReviewed || working) return
+    setError("")
+
+    if (willRewrite) {
+      setWorking("Rewriting the sections you flagged — this takes a moment...")
+      try {
+        const res = await fetch(`/api/projects/${projectId}/rewrite`, {
+          method: "POST",
+        })
+        if (!res.ok) throw new Error("rewrite failed")
+        // Full navigation so the server component reloads the new sections
+        window.location.href = `/project/${projectId}/review`
+      } catch {
+        setWorking(null)
+        setError("Something went wrong rewriting. Please try again.")
+      }
+      return
+    }
+
+    setWorking("Putting your final speech together...")
+    try {
+      const res = await fetch(`/api/projects/${projectId}/finalize`, {
+        method: "POST",
+      })
+      if (!res.ok) throw new Error("finalize failed")
+      window.location.href = `/project/${projectId}/final`
+    } catch {
+      setWorking(null)
+      setError("Something went wrong finishing up. Please try again.")
+    }
   }
 
   return (
     <div className="min-h-screen bg-background">
+      {working && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+          <div className="max-w-sm text-center space-y-4 px-4">
+            <div className="flex justify-center">
+              <div className="h-10 w-10 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+            </div>
+            <p className="text-sm text-muted-foreground">{working}</p>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-2xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -116,13 +159,12 @@ export default function SpeechReview({
             <span className="text-sm font-medium text-muted-foreground">
               {groomName}&apos;s speech
             </span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => router.push("/dashboard")}
+            <a
+              href="/dashboard"
+              className="text-sm text-muted-foreground hover:text-foreground"
             >
               Save &amp; exit
-            </Button>
+            </a>
           </div>
           <h1 className="text-2xl font-bold mb-2">Review your speech</h1>
           <p className="text-muted-foreground">
@@ -214,15 +256,26 @@ export default function SpeechReview({
         </div>
 
         {/* Footer */}
-        <div className="mt-8 flex items-center justify-between gap-3">
-          <p className="text-sm text-muted-foreground">
-            {allReviewed
-              ? "All parts reviewed."
-              : `${sections.length - reviewedCount} still to review.`}
-          </p>
-          <Button onClick={handleFinish} disabled={!allReviewed || isFinishing}>
-            Save review &amp; continue
-          </Button>
+        <div className="mt-8 space-y-3">
+          {rewriteCount > 0 && !canRewrite && (
+            <p className="text-sm text-muted-foreground">
+              You&apos;ve used both rewrite rounds — continuing will build your
+              final speech from the current wording.
+            </p>
+          )}
+          {error && <p className="text-sm text-destructive">{error}</p>}
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-sm text-muted-foreground">
+              {allReviewed
+                ? "All parts reviewed."
+                : `${sections.length - reviewedCount} still to review.`}
+            </p>
+            <Button onClick={handleContinue} disabled={!allReviewed || !!working}>
+              {willRewrite
+                ? `Rewrite ${rewriteCount} section${rewriteCount > 1 ? "s" : ""} →`
+                : "Finish & see my speech →"}
+            </Button>
+          </div>
         </div>
       </div>
     </div>

@@ -44,6 +44,7 @@ export default async function ReviewPage({
     <SpeechReview
       projectId={project.id}
       groomName={project.groomName}
+      rewriteRound={draft.rewriteRound}
       sections={sections.map((s) => ({
         id: s.id,
         sectionType: s.sectionType,
