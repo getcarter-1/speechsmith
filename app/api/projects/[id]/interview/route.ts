@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth/config"
 import { NextResponse } from "next/server"
 import { PrismaClient } from "@prisma/client"
 import { PrismaPg } from "@prisma/adapter-pg"
-import { INTERVIEW_QUESTIONS } from "@/lib/config/interview-questions"
+import { INTERVIEW_QUESTIONS, coerceAnswerForSave } from "@/lib/config/interview-questions"
 
 const connectionString = process.env.DATABASE_URL!
 const adapter = new PrismaPg({ connectionString })
@@ -34,7 +34,7 @@ export async function PATCH(
 
   const { dbModel, dbField } = question
 
-  const upsertData = { [dbField]: value }
+  const upsertData = { [dbField]: coerceAnswerForSave(dbField, value) }
 
   try {
     switch (dbModel) {

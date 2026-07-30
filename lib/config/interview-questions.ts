@@ -52,7 +52,6 @@ export const INTERVIEW_STAGES: { id: InterviewStage; label: string; description:
   { id: "couple", label: "The Couple", description: "Tell us about them together" },
   { id: "groom", label: "The Groom", description: "Tell us about your mate" },
   { id: "partner", label: "The Partner", description: "Tell us about the partner" },
-  { id: "stories", label: "The Stories", description: "The good stuff" },
   { id: "boundaries", label: "Boundaries", description: "What's in and what's out" },
 ]
 
@@ -678,4 +677,78 @@ export function getPreviousStage(stage: InterviewStage): InterviewStage | null {
 
 export function getRequiredQuestions(): Question[] {
   return INTERVIEW_QUESTIONS.filter((q) => q.required)
+}
+
+// The wizard controls emit strings/arrays/numbers that don't always match the
+// Prisma column type for a field. These sets record the true column types so
+// answers can be coerced before saving (otherwise Prisma rejects them and the
+// autosave silently fails), and coerced back when reloading saved answers.
+const BOOLEAN_FIELDS = new Set([
+  "includeToast",
+  "childrenPresent",
+  "elderlyPresent",
+  "swearingAllowed",
+  "innuendoAllowed",
+  "stagDoOptIn",
+  "exReferencesOptIn",
+])
+const INT_FIELDS = new Set([
+  "targetLengthMins",
+  "humourLevel",
+  "formalityLevel",
+  "conservatismLevel",
+  "embarrassmentCeiling",
+])
+const STRING_ARRAY_FIELDS = new Set([
+  "bestQualities",
+  "funniestTraits",
+  "worthMentioning",
+  "topicsToAvoid",
+])
+
+// Wizard value -> value shaped for the Prisma column.
+export function coerceAnswerForSave(
+  dbField: string,
+  value: unknown
+): boolean | number | string | string[] | null {
+  if (BOOLEAN_FIELDS.has(dbField)) return value === true || value === "true"
+  if (INT_FIELDS.has(dbField)) {
+    const n = typeof value === "number" ? value : parseInt(String(value), 10)
+    return Number.isNaN(n) ? null : n
+  }
+  if (STRING_ARRAY_FIELDS.has(dbField)) {
+    if (Array.isArray(value)) return value.map((v) => String(v))
+    if (typeof value === "string") return value.trim() ? [value] : []
+    return []
+  }
+  if (Array.isArray(value)) return value.join(", ")
+  if (typeof value === "number") return String(value)
+  return value == null ? null : String(value)
+}
+
+// Stored Prisma value -> value shaped for the wizard control (keyed on the
+// control type the question renders).
+export function coerceAnswerForWizard(
+  question: Question,
+  dbValue: unknown
+): string | string[] | number {
+  if (question.type === "slider") {
+    return typeof dbValue === "number" ? dbValue : Number(dbValue)
+  }
+  if (question.type === "radio") {
+    return typeof dbValue === "boolean" ? (dbValue ? "true" : "false") : String(dbValue)
+  }
+  if (question.type === "chips") {
+    const multiple = question.id === "speaker_humour_style"
+    if (multiple) {
+      if (Array.isArray(dbValue)) return dbValue as string[]
+      return typeof dbValue === "string" && dbValue ? dbValue.split(", ") : []
+    }
+    return Array.isArray(dbValue)
+      ? String((dbValue as unknown[])[0] ?? "")
+      : String(dbValue)
+  }
+  // text / textarea
+  if (Array.isArray(dbValue)) return (dbValue as unknown[]).join("\n")
+  return String(dbValue)
 }

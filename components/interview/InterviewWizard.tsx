@@ -19,6 +19,7 @@ interface InterviewWizardProps {
   projectId: string
   groomName: string
   initialStage?: InterviewStage
+  initialQuestionIndex?: number
   initialAnswers?: Record<string, string | string[] | number>
 }
 
@@ -26,11 +27,12 @@ export default function InterviewWizard({
   projectId,
   groomName,
   initialStage = "speaker",
+  initialQuestionIndex = 0,
   initialAnswers = {},
 }: InterviewWizardProps) {
   const router = useRouter()
   const [currentStage, setCurrentStage] = useState<InterviewStage>(initialStage)
-  const [questionIndex, setQuestionIndex] = useState(0)
+  const [questionIndex, setQuestionIndex] = useState(initialQuestionIndex)
   const [answers, setAnswers] = useState<Record<string, string | string[] | number>>(initialAnswers)
   const [isSaving, setIsSaving] = useState(false)
 
