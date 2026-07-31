@@ -1,0 +1,314 @@
+/* Speechsmith — tokens.css
+   Generated from brand-tokens.json v1.0.0 · territory: quiet-bureau
+   Import once in app/layout.tsx. Do not add component-specific colours here. */
+
+:root {
+  /* ── brand ───────────────────────────────────────────────── */
+  --colour-brand-canvas: #f4f0e8;
+  --colour-brand-ink: #22262e;
+  --colour-brand-accent: #3e5a7a;
+  --colour-brand-accent-strong: #2e4560;
+  --colour-brand-accent-soft: #dce2ea;
+  --colour-brand-highlight: #8a6a2e;
+
+  /* ── background ──────────────────────────────────────────── */
+  --colour-background-canvas: #f4f0e8;
+  --colour-background-surface: #faf8f3;
+  --colour-background-surface-raised: #ffffff;
+  --colour-background-sunken: #ede8dc;
+  --colour-background-inverse: #22262e;
+  --colour-background-accent-subtle: #e9edf2;
+  --colour-background-overlay: rgba(34, 38, 46, 0.8);
+
+  /* ── text ────────────────────────────────────────────────── */
+  --colour-text-primary: #22262e;
+  --colour-text-secondary: #3a3e44;
+  --colour-text-muted: #5c6068;
+  --colour-text-faint: #82857f;
+  --colour-text-inverse: #faf8f3;
+  --colour-text-on-accent: #faf8f3;
+  --colour-text-link: #3e5a7a;
+  --colour-text-link-hover: #2e4560;
+
+  /* ── border ──────────────────────────────────────────────── */
+  --colour-border-subtle: #dedacd;
+  --colour-border-default: #c9c5b8;
+  --colour-border-strong: #b4b0a2;
+  --colour-border-ink: #22262e;
+  --colour-border-accent: #3e5a7a;
+  --colour-border-focus: #3e5a7a;
+
+  /* ── semantic ────────────────────────────────────────────── */
+  --colour-semantic-success-text: #2f5b41;
+  --colour-semantic-success-surface: #e4ede6;
+  --colour-semantic-success-border: #9cb6a5;
+  --colour-semantic-warning-text: #7a5c24;
+  --colour-semantic-warning-surface: #f2ead8;
+  --colour-semantic-warning-border: #c9b285;
+  --colour-semantic-danger-text: #8c3a32;
+  --colour-semantic-danger-surface: #f3e4e1;
+  --colour-semantic-danger-border: #c79a93;
+  --colour-semantic-info-text: #3e5a7a;
+  --colour-semantic-info-surface: #e9edf2;
+  --colour-semantic-info-border: #a3b3c5;
+
+  /* ── occasion accents ────────────────────────────────────── */
+  --colour-occasion-wedding: #7e463a;
+  --colour-occasion-pre-wedding: #6b5326;
+  --colour-occasion-anniversary: #5b5a2c;
+  --colour-occasion-birthday: #34614a;
+  --colour-occasion-workplace: #35606e;
+  --colour-occasion-awards: #4a5480;
+  --colour-occasion-education: #614e7e;
+  --colour-occasion-religious-cultural: #6f4468;
+  --colour-occasion-personal-relationship: #7b4351;
+
+  --colour-occasion-subtle-wedding: #f1e8e5;
+  --colour-occasion-subtle-pre-wedding: #efebdf;
+  --colour-occasion-subtle-anniversary: #ededdf;
+  --colour-occasion-subtle-birthday: #e5ede8;
+  --colour-occasion-subtle-workplace: #e5ecee;
+  --colour-occasion-subtle-awards: #e8eaf1;
+  --colour-occasion-subtle-education: #ece8f1;
+  --colour-occasion-subtle-religious-cultural: #f0e8ee;
+  --colour-occasion-subtle-personal-relationship: #f2e7e9;
+
+  /* Active occasion. Set on <body data-occasion="wedding"> — see rules below.
+     Components reference ONLY these two, never a specific occasion. */
+  --colour-occasion-active: var(--colour-brand-accent);
+  --colour-occasion-active-subtle: var(--colour-background-accent-subtle);
+
+  /* ── character ───────────────────────────────────────────── */
+  --colour-character-keying: #f4f0e8;
+  --colour-character-placeholder-stripe-a: #e7e2d4;
+  --colour-character-placeholder-stripe-b: #f4f0e8;
+  --colour-character-placeholder-text: #82857f;
+
+  /* ── typography families ─────────────────────────────────── */
+  /* Families are loaded via next/font (see app/layout.tsx), which exposes them
+     as the CSS variables referenced below. Fallback stacks preserved. */
+  --font-family-ui: var(--font-archivo), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-family-mono: var(--font-plex-mono), ui-monospace, "SF Mono", Menlo, monospace;
+  --font-family-reading: var(--font-source-serif), Georgia, "Times New Roman", serif;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ── type roles · mobile-first sizes ─────────────────────── */
+  --type-display-headline-size: 2.125rem;
+  --type-display-headline-line-height: 1.02;
+  --type-display-headline-letter-spacing: -0.03em;
+  --type-page-title-size: 1.75rem;
+  --type-page-title-line-height: 1.08;
+  --type-page-title-letter-spacing: -0.025em;
+  --type-section-title-size: 1.25rem;
+  --type-section-title-line-height: 1.25;
+  --type-section-title-letter-spacing: -0.015em;
+  --type-card-title-size: 1.0625rem;
+  --type-card-title-line-height: 1.35;
+  --type-card-title-letter-spacing: -0.01em;
+  --type-body-size: 1rem;
+  --type-body-line-height: 1.65;
+  --type-body-small-size: 0.875rem;
+  --type-body-small-line-height: 1.55;
+  --type-label-size: 0.6875rem;
+  --type-label-line-height: 1.3;
+  --type-label-letter-spacing: 0.1em;
+  --type-helper-text-size: 0.8125rem;
+  --type-helper-text-line-height: 1.5;
+  --type-button-size: 1rem;
+  --type-conversational-prompt-size: 1.4375rem;
+  --type-conversational-prompt-line-height: 1.15;
+  --type-conversational-prompt-letter-spacing: -0.02em;
+  --type-speech-editor-size: 1.125rem;
+  --type-speech-editor-line-height: 1.75;
+  --type-speech-reader-size: 1.1875rem;
+  --type-speech-reader-line-height: 1.85;
+  --type-annotation-size: 0.75rem;
+  --type-annotation-line-height: 1.45;
+  --type-annotation-letter-spacing: 0.04em;
+
+  /* ── spacing ─────────────────────────────────────────────── */
+  --space-0: 0rem;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* ── radii · Quiet Bureau is deliberately sharp ──────────── */
+  --radius-none: 0rem;
+  --radius-sharp: 0.125rem;
+  --radius-card: 0.125rem;
+  --radius-control: 0.125rem;
+  --radius-avatar: 0.125rem;
+  --radius-pill: 62.4375rem;
+
+  /* ── borders ─────────────────────────────────────────────── */
+  --border-hairline: 1px;
+  --border-default: 1px;
+  --border-emphasis: 2px;
+
+  /* ── shadows · used sparingly; borders carry structure ───── */
+  --shadow-none: none;
+  --shadow-raised: 0 1px 2px rgba(34, 38, 46, 0.06);
+  --shadow-overlay: 0 8px 24px rgba(34, 38, 46, 0.14);
+  --shadow-focus-ring: 0 0 0 3px rgba(62, 90, 122, 0.35);
+
+  /* ── layout ──────────────────────────────────────────────── */
+  --container-reading: 40rem;
+  --container-form: 33.75rem;
+  --container-app: 75rem;
+  --container-wide: 90rem;
+  --container-gutter: 1rem;
+
+  /* ── illustration ────────────────────────────────────────── */
+  --illustration-avatar: 2.5rem;
+  --illustration-avatar-large: 3.5rem;
+  --illustration-inline: 10rem;
+  --illustration-panel: 17.5rem;
+  --illustration-hero: 26.25rem;
+  --illustration-hero-mobile: 12.5rem;
+  --illustration-min-rendered: 2.5rem;
+
+  /* Character scale multiplier. Overridden per sensitivity tier below. */
+  --character-scale: 1;
+  --occasion-chroma: 1;
+
+  /* ── motion ──────────────────────────────────────────────── */
+  --motion-duration-instant: 0ms;
+  --motion-duration-fast: 120ms;
+  --motion-duration-base: 200ms;
+  --motion-duration-slow: 320ms;
+  --motion-duration-deliberate: 480ms;
+  --motion-easing-standard: cubic-bezier(0.2, 0, 0.2, 1);
+  --motion-easing-enter: cubic-bezier(0, 0, 0.2, 1);
+  --motion-easing-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  /* ── z-index ─────────────────────────────────────────────── */
+  --z-base: 0;
+  --z-raised: 10;
+  --z-sticky: 100;
+  --z-dropdown: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+
+  /* ── touch targets ───────────────────────────────────────── */
+  --touch-target-minimum: 2.75rem;
+  --touch-target-comfortable: 3rem;
+}
+
+/* Desktop type step-up. Single breakpoint for type; layout has its own. */
+@media (min-width: 64rem) {
+  :root {
+    --type-display-headline-size: 3rem;
+    --type-page-title-size: 2.125rem;
+    --type-section-title-size: 1.375rem;
+    --type-button-size: 0.9375rem;
+    --type-conversational-prompt-size: 1.75rem;
+    --type-speech-editor-size: 1.1875rem;
+    --type-speech-reader-size: 1.375rem;
+    --container-gutter: 2.5rem;
+  }
+}
+
+@media (min-width: 48rem) and (max-width: 63.999rem) {
+  :root {
+    --container-gutter: 1.5rem;
+  }
+}
+
+/* ── Occasion theming ───────────────────────────────────────
+   Set data-occasion on <body> from the project's speech-type category.
+   Components use --colour-occasion-active only. */
+[data-occasion="wedding"] { --colour-occasion-active: var(--colour-occasion-wedding); --colour-occasion-active-subtle: var(--colour-occasion-subtle-wedding); }
+[data-occasion="pre-wedding"] { --colour-occasion-active: var(--colour-occasion-pre-wedding); --colour-occasion-active-subtle: var(--colour-occasion-subtle-pre-wedding); }
+[data-occasion="anniversary"] { --colour-occasion-active: var(--colour-occasion-anniversary); --colour-occasion-active-subtle: var(--colour-occasion-subtle-anniversary); }
+[data-occasion="birthday"] { --colour-occasion-active: var(--colour-occasion-birthday); --colour-occasion-active-subtle: var(--colour-occasion-subtle-birthday); }
+[data-occasion="workplace"] { --colour-occasion-active: var(--colour-occasion-workplace); --colour-occasion-active-subtle: var(--colour-occasion-subtle-workplace); }
+[data-occasion="awards"] { --colour-occasion-active: var(--colour-occasion-awards); --colour-occasion-active-subtle: var(--colour-occasion-subtle-awards); }
+[data-occasion="education"] { --colour-occasion-active: var(--colour-occasion-education); --colour-occasion-active-subtle: var(--colour-occasion-subtle-education); }
+[data-occasion="religious-cultural"] { --colour-occasion-active: var(--colour-occasion-religious-cultural); --colour-occasion-active-subtle: var(--colour-occasion-subtle-religious-cultural); }
+[data-occasion="personal-relationship"] { --colour-occasion-active: var(--colour-occasion-personal-relationship); --colour-occasion-active-subtle: var(--colour-occasion-subtle-personal-relationship); }
+
+/* ── Sensitivity tiers ──────────────────────────────────────
+   Set data-sensitivity on <body> from the active speech type.
+   Governs character scale, decorative allowance and accent intensity. */
+[data-sensitivity="playful"] { --character-scale: 1; --occasion-chroma: 1; }
+[data-sensitivity="warm"] { --character-scale: 1; --occasion-chroma: 0.85; }
+[data-sensitivity="formal"] { --character-scale: 0.7; --occasion-chroma: 0.6; }
+[data-sensitivity="sensitive"] { --character-scale: 0.45; --occasion-chroma: 0.35; }
+[data-sensitivity="culturally-reviewed"] { --character-scale: 0.45; --occasion-chroma: 0.35; }
+
+[data-sensitivity="sensitive"] [data-decorative-illustration],
+[data-sensitivity="culturally-reviewed"] [data-decorative-illustration] {
+  display: none;
+}
+
+/* ── Base resets ────────────────────────────────────────────── */
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--colour-background-canvas);
+  color: var(--colour-text-primary);
+  font-family: var(--font-family-ui);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line-height);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--colour-text-link);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+a:hover {
+  color: var(--colour-text-link-hover);
+}
+
+:focus-visible {
+  outline: var(--border-emphasis) solid var(--colour-border-focus);
+  outline-offset: 2px;
+}
+
+/* Interactive elements inherit the UI font. The 44px minimum touch target is
+   enforced by the new primitives themselves (not globally) so existing,
+   not-yet-migrated compact controls are left untouched during the transition. */
+button,
+a[role="button"],
+[role="option"],
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-duration-fast: 0ms;
+    --motion-duration-base: 0ms;
+    --motion-duration-slow: 0ms;
+    --motion-duration-deliberate: 0ms;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

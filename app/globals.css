@@ -1,8 +1,112 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "./styles/tokens.css";
 
 @custom-variant dark (&:is(.dark *));
+
+/* ── SpeechSmith design system (Quiet Bureau) ─────────────────────────
+   Maps the design tokens (tokens.css, British `--colour-*`) onto Tailwind v4
+   utility namespaces. Components use these names; `occasion` is runtime-themed
+   via body[data-occasion]. */
+@theme inline {
+  /* surfaces & brand */
+  --color-canvas: var(--colour-background-canvas);
+  --color-surface: var(--colour-background-surface);
+  --color-surface-raised: var(--colour-background-surface-raised);
+  --color-surface-sunken: var(--colour-background-sunken);
+  --color-surface-inverse: var(--colour-background-inverse);
+  --color-ink: var(--colour-brand-ink);
+  --color-accent: var(--colour-brand-accent);
+  --color-accent-strong: var(--colour-brand-accent-strong);
+  --color-accent-soft: var(--colour-brand-accent-soft);
+  --color-accent-subtle: var(--colour-background-accent-subtle);
+  --color-highlight: var(--colour-brand-highlight);
+
+  /* text */
+  --color-content-primary: var(--colour-text-primary);
+  --color-content-secondary: var(--colour-text-secondary);
+  --color-content-muted: var(--colour-text-muted);
+  --color-content-faint: var(--colour-text-faint);
+  --color-content-inverse: var(--colour-text-inverse);
+  --color-content-on-accent: var(--colour-text-on-accent);
+
+  /* borders */
+  --color-line-subtle: var(--colour-border-subtle);
+  --color-line: var(--colour-border-default);
+  --color-line-strong: var(--colour-border-strong);
+  --color-line-ink: var(--colour-border-ink);
+  --color-line-accent: var(--colour-border-accent);
+
+  /* semantic */
+  --color-success: var(--colour-semantic-success-text);
+  --color-success-surface: var(--colour-semantic-success-surface);
+  --color-success-border: var(--colour-semantic-success-border);
+  --color-warning: var(--colour-semantic-warning-text);
+  --color-warning-surface: var(--colour-semantic-warning-surface);
+  --color-warning-border: var(--colour-semantic-warning-border);
+  --color-danger: var(--colour-semantic-danger-text);
+  --color-danger-surface: var(--colour-semantic-danger-surface);
+  --color-danger-border: var(--colour-semantic-danger-border);
+  --color-info: var(--colour-semantic-info-text);
+  --color-info-surface: var(--colour-semantic-info-surface);
+  --color-info-border: var(--colour-semantic-info-border);
+
+  /* occasion — components reference only these two */
+  --color-occasion: var(--colour-occasion-active);
+  --color-occasion-subtle: var(--colour-occasion-active-subtle);
+
+  /* character placeholder */
+  --color-character-stripe-a: var(--colour-character-placeholder-stripe-a);
+  --color-character-stripe-b: var(--colour-character-placeholder-stripe-b);
+  --color-character-placeholder-text: var(--colour-character-placeholder-text);
+
+  /* families */
+  --font-ui: var(--font-family-ui);
+  --font-mono: var(--font-family-mono);
+  --font-reading: var(--font-family-reading);
+
+  /* type roles */
+  --text-display: var(--type-display-headline-size);
+  --text-display--line-height: var(--type-display-headline-line-height);
+  --text-display--letter-spacing: var(--type-display-headline-letter-spacing);
+  --text-page-title: var(--type-page-title-size);
+  --text-page-title--line-height: var(--type-page-title-line-height);
+  --text-page-title--letter-spacing: var(--type-page-title-letter-spacing);
+  --text-section-title: var(--type-section-title-size);
+  --text-section-title--line-height: var(--type-section-title-line-height);
+  --text-section-title--letter-spacing: var(--type-section-title-letter-spacing);
+  --text-card-title: var(--type-card-title-size);
+  --text-card-title--line-height: var(--type-card-title-line-height);
+  --text-card-title--letter-spacing: var(--type-card-title-letter-spacing);
+  --text-body: var(--type-body-size);
+  --text-body--line-height: var(--type-body-line-height);
+  --text-body-sm: var(--type-body-small-size);
+  --text-body-sm--line-height: var(--type-body-small-line-height);
+  --text-label: var(--type-label-size);
+  --text-label--line-height: var(--type-label-line-height);
+  --text-label--letter-spacing: var(--type-label-letter-spacing);
+  --text-helper: var(--type-helper-text-size);
+  --text-helper--line-height: var(--type-helper-text-line-height);
+  --text-button: var(--type-button-size);
+  --text-prompt: var(--type-conversational-prompt-size);
+  --text-prompt--line-height: var(--type-conversational-prompt-line-height);
+  --text-prompt--letter-spacing: var(--type-conversational-prompt-letter-spacing);
+  --text-speech-editor: var(--type-speech-editor-size);
+  --text-speech-editor--line-height: var(--type-speech-editor-line-height);
+  --text-speech-reader: var(--type-speech-reader-size);
+  --text-speech-reader--line-height: var(--type-speech-reader-line-height);
+  --text-annotation: var(--type-annotation-size);
+  --text-annotation--line-height: var(--type-annotation-line-height);
+  --text-annotation--letter-spacing: var(--type-annotation-letter-spacing);
+
+  /* radii — Quiet Bureau is deliberately sharp */
+  --radius-sharp: 0.125rem;
+  --radius-card: 0.125rem;
+  --radius-control: 0.125rem;
+  --radius-avatar: 0.125rem;
+  --radius-pill: 62.4375rem;
+}
 
 @theme inline {
   --color-background: var(--background);
