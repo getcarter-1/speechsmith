@@ -14,7 +14,7 @@ interface SiteHeaderProps {
 export function SiteHeader({
   variant = "marketing",
   primaryHref = "/signup",
-  primaryLabel = "Start a speech",
+  primaryLabel = "Write my speech",
   right,
 }: SiteHeaderProps) {
   return (
@@ -25,13 +25,13 @@ export function SiteHeader({
           <nav aria-label="Main" className="flex items-center gap-5">
             <Link
               href="/login"
-              className="font-mono text-label uppercase text-content-muted no-underline hover:text-content-primary"
+              className="font-ui text-body-sm font-semibold text-content-secondary no-underline hover:text-content-primary"
             >
               Sign in
             </Link>
             <Link
               href={primaryHref}
-              className="inline-flex min-h-11 items-center rounded-control bg-ink px-4 font-ui text-button font-semibold text-content-inverse no-underline"
+              className="inline-flex min-h-11 items-center rounded-control bg-accent px-4 font-ui text-button font-semibold text-content-on-accent no-underline transition-colors duration-[var(--motion-duration-fast)] hover:bg-accent-strong"
             >
               {primaryLabel}
             </Link>

@@ -270,19 +270,24 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-a {
-  color: var(--colour-text-link);
-  text-decoration: underline;
-  text-underline-offset: 0.15em;
-}
+/* Link + focus defaults live in @layer base so Tailwind text-colour /
+   no-underline utilities win on link-styled CTAs (otherwise the button label
+   inherits the link colour and disappears on a coloured fill). */
+@layer base {
+  a {
+    color: var(--colour-text-link);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
 
-a:hover {
-  color: var(--colour-text-link-hover);
-}
+  a:hover {
+    color: var(--colour-text-link-hover);
+  }
 
-:focus-visible {
-  outline: var(--border-emphasis) solid var(--colour-border-focus);
-  outline-offset: 2px;
+  :focus-visible {
+    outline: var(--border-emphasis) solid var(--colour-border-focus);
+    outline-offset: 2px;
+  }
 }
 
 /* Interactive elements inherit the UI font. The 44px minimum touch target is
