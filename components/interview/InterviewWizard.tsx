@@ -7,13 +7,14 @@ import {
   INTERVIEW_QUESTIONS,
   InterviewStage,
   getQuestionsByStage,
+  getStageIndex,
   getNextStage,
   getPreviousStage,
 } from "@/lib/config/interview-questions"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import ProgressStepper from "./ProgressStepper"
-import QuestionCard from "./QuestionCard"
+import { InterviewPromptCard } from "./InterviewPromptCard"
+import { SpeechsmithCharacter } from "@/components/character/SpeechsmithCharacter"
+import { PrimaryCTA } from "@/components/common/PrimaryCTA"
+import { SecondaryCTA } from "@/components/common/SecondaryCTA"
 
 interface InterviewWizardProps {
   projectId: string
@@ -22,6 +23,8 @@ interface InterviewWizardProps {
   initialQuestionIndex?: number
   initialAnswers?: Record<string, string | string[] | number>
 }
+
+const TOTAL_QUESTIONS = INTERVIEW_QUESTIONS.length
 
 export default function InterviewWizard({
   projectId,
@@ -42,20 +45,30 @@ export default function InterviewWizard({
   const isLastStage = currentStage === INTERVIEW_STAGES[INTERVIEW_STAGES.length - 1].id
   const currentValue = answers[currentQuestion?.id] ?? ""
 
-  const saveAnswer = useCallback(async (questionId: string, value: string | string[] | number) => {
-    setIsSaving(true)
-    try {
-      await fetch(`/api/projects/${projectId}/interview`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ questionId, value }),
-      })
-    } catch {
-      console.error("Autosave failed")
-    } finally {
-      setIsSaving(false)
-    }
-  }, [projectId])
+  // Global position across all stages, for the "Q06 / 39" counter + progress.
+  const priorCount = INTERVIEW_STAGES.slice(0, getStageIndex(currentStage)).reduce(
+    (n, s) => n + getQuestionsByStage(s.id).length,
+    0
+  )
+  const globalIndex = priorCount + questionIndex + 1
+
+  const saveAnswer = useCallback(
+    async (questionId: string, value: string | string[] | number) => {
+      setIsSaving(true)
+      try {
+        await fetch(`/api/projects/${projectId}/interview`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ questionId, value }),
+        })
+      } catch {
+        console.error("Autosave failed")
+      } finally {
+        setIsSaving(false)
+      }
+    },
+    [projectId]
+  )
 
   const handleChange = (value: string | string[] | number) => {
     setAnswers((prev) => ({ ...prev, [currentQuestion.id]: value }))
@@ -119,77 +132,63 @@ export default function InterviewWizard({
 
   if (!currentQuestion) return null
 
-  return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-2xl mx-auto px-4 py-8">
+  const counter = `Q${String(globalIndex).padStart(2, "0")} / ${TOTAL_QUESTIONS}`
 
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <span className="text-sm font-medium text-muted-foreground">
-              {groomName}'s speech
-            </span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => router.push("/dashboard")}
-            >
-              Save &amp; exit
-            </Button>
-          </div>
-          <ProgressStepper currentStage={currentStage} />
+  return (
+    <div className="min-h-screen bg-canvas">
+      <div className="mx-auto max-w-[var(--container-app)] px-4 py-8">
+        {/* header */}
+        <div className="mb-8 flex items-center justify-between">
+          <span className="font-ui text-body-sm font-semibold text-content-muted">
+            {groomName}&apos;s speech
+          </span>
+          <SecondaryCTA variant="quiet" onClick={() => router.push("/dashboard")}>
+            Save &amp; exit
+          </SecondaryCTA>
         </div>
 
-        {/* Question Card */}
-        <Card className="mb-6">
-          <CardContent className="pt-6 pb-6">
-            <QuestionCard
+        <div className="flex justify-center gap-8">
+          {/* desktop character rail */}
+          <aside className="hidden shrink-0 lg:block lg:w-[16.25rem]">
+            <SpeechsmithCharacter state="listening" size="panel" />
+          </aside>
+
+          {/* form column */}
+          <div className="w-full max-w-[var(--container-form)]">
+            <InterviewPromptCard
               question={currentQuestion}
               value={currentValue}
               onChange={handleChange}
+              counter={counter}
+              progressValue={globalIndex}
+              progressMax={TOTAL_QUESTIONS}
             />
-          </CardContent>
-        </Card>
 
-        {/* Navigation */}
-        <div className="flex items-center justify-between">
-          <Button
-            variant="ghost"
-            onClick={handleBack}
-          >
-            ← Back
-          </Button>
-
-          <div className="flex items-center gap-3">
-            {isSaving && (
-              <span className="text-xs text-muted-foreground">Saving...</span>
-            )}
-            {currentQuestion.skippable && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleSkip}
-              >
-                Skip
-              </Button>
-            )}
-            <Button
-              onClick={handleNext}
-              disabled={!canProceed()}
-            >
-              {isLastQuestionInStage && isLastStage
-                ? "Finish interview"
-                : isLastQuestionInStage
-                ? "Next section →"
-                : "Next →"}
-            </Button>
+            {/* navigation */}
+            <div className="mt-6 flex items-center justify-between gap-3">
+              <SecondaryCTA variant="quiet" onClick={handleBack}>
+                ← Back
+              </SecondaryCTA>
+              <div className="flex items-center gap-3">
+                {isSaving && (
+                  <span className="font-mono text-annotation text-content-faint">
+                    Saving…
+                  </span>
+                )}
+                {currentQuestion.skippable && (
+                  <SecondaryCTA variant="quiet" onClick={handleSkip}>
+                    Skip
+                  </SecondaryCTA>
+                )}
+                <PrimaryCTA onClick={handleNext} disabled={!canProceed()}>
+                  {isLastQuestionInStage && isLastStage
+                    ? "Finish interview"
+                    : "Next"}
+                </PrimaryCTA>
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* Question counter */}
-        <p className="text-center text-xs text-muted-foreground mt-4">
-          Question {questionIndex + 1} of {stageQuestions.length} in this section
-        </p>
       </div>
     </div>
   )
