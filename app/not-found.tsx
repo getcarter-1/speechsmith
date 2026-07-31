@@ -1,15 +1,15 @@
 import Link from "next/link"
-import { buttonVariants } from "@/components/ui/button"
+import { primaryLinkClass } from "@/lib/ui"
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-8">
-      <div className="max-w-md text-center space-y-6">
-        <h1 className="text-3xl font-bold">Page not found</h1>
-        <p className="text-muted-foreground">
+    <div className="flex min-h-screen items-center justify-center bg-canvas p-8">
+      <div className="flex w-full max-w-[var(--container-form)] flex-col items-center gap-4 text-center">
+        <h1 className="font-ui text-page-title font-bold">Page not found</h1>
+        <p className="text-body text-content-muted">
           We couldn&apos;t find that page.
         </p>
-        <Link className={buttonVariants()} href="/dashboard">
+        <Link className={primaryLinkClass} href="/dashboard">
           Back to dashboard
         </Link>
       </div>

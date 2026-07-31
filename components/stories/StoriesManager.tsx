@@ -2,10 +2,10 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { StepHeader } from "@/components/flow/StepHeader"
+import { PrimaryCTA } from "@/components/common/PrimaryCTA"
+import { SecondaryCTA } from "@/components/common/SecondaryCTA"
+import { FreeTextAnswerField } from "@/components/interview/FreeTextAnswerField"
 
 interface Story {
   id: string
@@ -22,33 +22,14 @@ interface StoriesManagerProps {
   initialStories: Story[]
 }
 
-const FIELDS: { key: keyof Omit<Story, "id">; label: string; placeholder: string; input?: boolean }[] = [
-  {
-    key: "title",
-    label: "Name this story",
-    placeholder: "e.g. The Amsterdam stag do",
-    input: true,
-  },
-  {
-    key: "setup",
-    label: "Set the scene",
-    placeholder: "Where and when was this, and what was going on?",
-  },
-  {
-    key: "event",
-    label: "What happened?",
-    placeholder: "Tell it like you'd tell a mate down the pub.",
-  },
-  {
-    key: "payoff",
-    label: "The payoff",
-    placeholder: "The punchline, or how it all turned out.",
-  },
-  {
-    key: "whatItReveals",
-    label: "What it says about him (optional)",
-    placeholder: "The warm point underneath the funny bit.",
-  },
+const inputClass =
+  "min-h-11 w-full rounded-control border border-line-strong bg-surface-sunken px-3 font-ui text-body text-content-primary outline-none placeholder:text-content-faint focus-visible:border-line-accent focus-visible:shadow-[var(--shadow-focus-ring)]"
+
+const TEXTAREAS: { key: keyof Omit<Story, "id" | "title">; label: string; placeholder: string }[] = [
+  { key: "setup", label: "Set the scene", placeholder: "Where and when was this, and what was going on?" },
+  { key: "event", label: "What happened?", placeholder: "Tell it like you'd tell a mate down the pub." },
+  { key: "payoff", label: "The payoff", placeholder: "The punchline, or how it all turned out." },
+  { key: "whatItReveals", label: "What it says about him (optional)", placeholder: "The warm point underneath the funny bit." },
 ]
 
 export default function StoriesManager({
@@ -120,133 +101,121 @@ export default function StoriesManager({
     if (!confirm("Delete this story?")) return
     setStories((prev) => prev.filter((s) => s.id !== id))
     try {
-      await fetch(`/api/projects/${projectId}/stories/${id}`, {
-        method: "DELETE",
-      })
+      await fetch(`/api/projects/${projectId}/stories/${id}`, { method: "DELETE" })
     } catch {
       console.error("Failed to delete story")
     }
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <span className="text-sm font-medium text-muted-foreground">
-            {groomName}&apos;s speech
-          </span>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.push("/dashboard")}
-          >
-            Save &amp; exit
-          </Button>
-        </div>
+    <div className="min-h-screen bg-canvas">
+      <div className="mx-auto max-w-[var(--container-form)] px-4 py-8">
+        <StepHeader groomName={groomName} />
 
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold mb-2">The stories</h1>
-          <p className="text-muted-foreground">
+        <div className="mb-6 flex flex-col gap-2">
+          <span className="font-mono text-label uppercase text-occasion">
+            The good stuff
+          </span>
+          <h1 className="font-ui text-page-title font-bold">The stories</h1>
+          <p className="text-body text-content-muted">
             These are the heart of the speech. Add the anecdotes about{" "}
-            {groomName} worth telling — the more specific, the funnier and
-            warmer the result.
+            {groomName} worth telling — the more specific, the funnier and warmer
+            the result.
           </p>
         </div>
 
         {stories.length === 0 && (
-          <Card className="mb-4">
-            <CardContent className="py-10 text-center space-y-3">
-              <p className="text-muted-foreground">
-                No stories yet. Add the first one to get started.
-              </p>
-              <Button onClick={addStory} disabled={busy}>
-                {busy ? "Adding..." : "Add a story"}
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="mb-4 flex flex-col items-center gap-3 rounded-card border border-line bg-surface px-4 py-10 text-center">
+            <p className="text-body text-content-muted">
+              No stories yet. Add the first one to get started.
+            </p>
+            <PrimaryCTA onClick={addStory} disabled={busy} loading={busy}>
+              Add a story
+            </PrimaryCTA>
+          </div>
         )}
 
-        <div className="space-y-4">
+        <div className="flex flex-col gap-4">
           {stories.map((story, index) => (
-            <Card key={story.id}>
-              <CardHeader>
-                <div className="flex items-center justify-between gap-2">
-                  <CardTitle className="text-base">
-                    {story.title.trim() || `Story ${index + 1}`}
-                  </CardTitle>
-                  <div className="flex items-center gap-2">
-                    {savingId === story.id && (
-                      <span className="text-xs text-muted-foreground">
-                        Saving...
-                      </span>
-                    )}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-destructive hover:text-destructive"
-                      onClick={() => deleteStory(story.id)}
-                    >
-                      Delete
-                    </Button>
-                  </div>
+            <div
+              key={story.id}
+              className="flex flex-col gap-4 rounded-card border border-line bg-surface p-5"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <h2 className="font-ui text-card-title font-semibold">
+                  {story.title.trim() || `Story ${index + 1}`}
+                </h2>
+                <div className="flex items-center gap-2">
+                  {savingId === story.id && (
+                    <span className="font-mono text-annotation text-content-faint">
+                      Saving…
+                    </span>
+                  )}
+                  <SecondaryCTA
+                    variant="quiet"
+                    onClick={() => deleteStory(story.id)}
+                  >
+                    Delete
+                  </SecondaryCTA>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {FIELDS.map((field) => (
-                  <div key={field.key}>
-                    <p className="text-sm font-medium mb-1.5">{field.label}</p>
-                    {field.input ? (
-                      <Input
-                        placeholder={field.placeholder}
-                        value={story[field.key]}
-                        onChange={(e) =>
-                          updateField(story.id, field.key, e.target.value)
-                        }
-                        onBlur={() => saveStory(story.id)}
-                      />
-                    ) : (
-                      <Textarea
-                        placeholder={field.placeholder}
-                        value={story[field.key]}
-                        onChange={(e) =>
-                          updateField(story.id, field.key, e.target.value)
-                        }
-                        onBlur={() => saveStory(story.id)}
-                      />
-                    )}
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <p className="font-ui text-body-sm font-semibold">
+                  Name this story
+                </p>
+                <input
+                  className={inputClass}
+                  placeholder="e.g. The Amsterdam stag do"
+                  value={story.title}
+                  onChange={(e) => updateField(story.id, "title", e.target.value)}
+                  onBlur={() => saveStory(story.id)}
+                />
+              </div>
+
+              {TEXTAREAS.map((field) => (
+                <div key={field.key} className="flex flex-col gap-1.5">
+                  <p className="font-ui text-body-sm font-semibold">
+                    {field.label}
+                  </p>
+                  <FreeTextAnswerField
+                    placeholder={field.placeholder}
+                    value={story[field.key]}
+                    onChange={(e) =>
+                      updateField(story.id, field.key, e.target.value)
+                    }
+                    onBlur={() => saveStory(story.id)}
+                  />
+                </div>
+              ))}
+            </div>
           ))}
         </div>
 
         {stories.length > 0 && (
-          <Button
+          <SecondaryCTA
             variant="outline"
             className="mt-4 w-full"
             onClick={addStory}
             disabled={busy}
           >
-            {busy ? "Adding..." : "+ Add another story"}
-          </Button>
+            {busy ? "Adding…" : "+ Add another story"}
+          </SecondaryCTA>
         )}
 
-        {/* Navigation */}
         <div className="mt-8 flex items-center justify-between">
-          <Button
-            variant="ghost"
+          <SecondaryCTA
+            variant="quiet"
             onClick={() => router.push(`/project/${projectId}/interview`)}
           >
             ← Back
-          </Button>
-          <Button onClick={() => router.push(`/project/${projectId}/media`)}>
+          </SecondaryCTA>
+          <PrimaryCTA onClick={() => router.push(`/project/${projectId}/media`)}>
             Continue →
-          </Button>
+          </PrimaryCTA>
         </div>
 
-        <p className="text-center text-xs text-muted-foreground mt-4">
+        <p className="mt-4 text-center text-annotation text-content-faint">
           Stories are optional, but a speech with none will be pretty thin.
         </p>
       </div>

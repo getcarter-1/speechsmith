@@ -1,8 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { Button, buttonVariants } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { cn } from "@/lib/utils"
+import { primaryLinkClass, outlineLinkClass } from "@/lib/ui"
+import { SecondaryCTA } from "@/components/common/SecondaryCTA"
+import { SpeechsmithCharacter } from "@/components/character/SpeechsmithCharacter"
 
 interface FinalSpeechProps {
   projectId: string
@@ -18,7 +20,7 @@ export default function FinalSpeech({
   const [copied, setCopied] = useState(false)
 
   const words = speech.trim() ? speech.trim().split(/\s+/).length : 0
-  const minutes = Math.max(1, Math.round(words / 130)) // ~130 words/min spoken
+  const minutes = Math.max(1, Math.round(words / 130))
 
   const copy = async () => {
     try {
@@ -34,65 +36,67 @@ export default function FinalSpeech({
     `/api/projects/${projectId}/export?format=${format}`
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <span className="text-sm font-medium text-muted-foreground">
+    <div className="min-h-screen bg-canvas">
+      <div className="mx-auto max-w-[40rem] px-4 py-8">
+        <div className="mb-8 flex items-center justify-between">
+          <span className="font-ui text-body-sm font-semibold text-content-muted">
             {groomName}&apos;s speech
           </span>
           <a
             href="/dashboard"
-            className="text-sm text-muted-foreground hover:text-foreground"
+            className="font-ui text-body-sm font-semibold text-content-muted no-underline hover:text-content-primary"
           >
             Dashboard
           </a>
         </div>
 
-        <div className="mb-6 space-y-2">
-          <h1 className="text-3xl font-bold">Your speech is ready 🎉</h1>
-          <p className="text-muted-foreground">
-            About {words} words — roughly {minutes} minute
-            {minutes > 1 ? "s" : ""} spoken aloud.
-          </p>
+        <div className="mb-6 flex items-center gap-4">
+          <SpeechsmithCharacter
+            state="complete"
+            size="inline"
+            scale={0.5}
+            decorative
+            className="hidden sm:block"
+          />
+          <div className="flex flex-col gap-1">
+            <h1 className="font-ui text-page-title font-bold">
+              Your speech is ready 🎉
+            </h1>
+            <p className="text-body text-content-muted">
+              About {words} words — roughly {minutes} minute
+              {minutes > 1 ? "s" : ""} spoken aloud.
+            </p>
+          </div>
         </div>
 
-        {/* Downloads */}
-        <div className="flex flex-wrap items-center gap-2 mb-6">
-          <a href={exportHref("pdf")} className={buttonVariants()}>
+        {/* Export bar */}
+        <div className="mb-6 flex flex-wrap items-center gap-2">
+          <a href={exportHref("pdf")} className={primaryLinkClass}>
             Download PDF
           </a>
-          <a
-            href={exportHref("docx")}
-            className={buttonVariants({ variant: "outline" })}
-          >
+          <a href={exportHref("docx")} className={outlineLinkClass}>
             Word (.docx)
           </a>
-          <a
-            href={exportHref("txt")}
-            className={buttonVariants({ variant: "outline" })}
-          >
+          <a href={exportHref("txt")} className={outlineLinkClass}>
             Text (.txt)
           </a>
-          <Button variant="outline" onClick={copy}>
+          <SecondaryCTA variant="quiet" onClick={copy}>
             {copied ? "Copied ✓" : "Copy"}
-          </Button>
+          </SecondaryCTA>
           <a
             href={`/project/${projectId}/review`}
-            className="text-sm text-muted-foreground hover:text-foreground self-center ml-1"
+            className="ml-1 self-center font-ui text-body-sm font-semibold text-content-muted no-underline hover:text-content-primary"
           >
             Back to review
           </a>
         </div>
 
-        {/* Speech */}
-        <Card>
-          <CardContent className="py-6">
-            <p className="whitespace-pre-wrap text-base leading-relaxed">
-              {speech}
-            </p>
-          </CardContent>
-        </Card>
+        {/* Speech — the reading serif, so it looks like a speech, not an app */}
+        <div className="rounded-card border border-line bg-surface p-6">
+          <p className="whitespace-pre-wrap font-reading text-speech-reader text-content-primary">
+            {speech}
+          </p>
+        </div>
       </div>
     </div>
   )

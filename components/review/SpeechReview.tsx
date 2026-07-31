@@ -1,10 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Textarea } from "@/components/ui/textarea"
+import { cn } from "@/lib/utils"
+import { StepHeader } from "@/components/flow/StepHeader"
+import { PrimaryCTA } from "@/components/common/PrimaryCTA"
+import { FreeTextAnswerField } from "@/components/interview/FreeTextAnswerField"
 
 type SectionStatus = "PENDING" | "GOOD" | "DROP" | "REWRITE"
 
@@ -27,18 +27,52 @@ interface SpeechReviewProps {
 
 const MAX_REWRITE_ROUNDS = 2
 
-const statusBadge: Record<
-  SectionStatus,
-  { label: string; variant: "default" | "secondary" | "outline" | "destructive" }
-> = {
-  PENDING: { label: "Not reviewed", variant: "outline" },
-  GOOD: { label: "Keeping", variant: "default" },
-  REWRITE: { label: "Rewrite", variant: "secondary" },
-  DROP: { label: "Dropping", variant: "destructive" },
+const statusBadge: Record<SectionStatus, { label: string; cls: string }> = {
+  PENDING: { label: "Not reviewed", cls: "border-line text-content-muted" },
+  GOOD: {
+    label: "Keeping",
+    cls: "border-success-border bg-success-surface text-success",
+  },
+  REWRITE: {
+    label: "Rewrite",
+    cls: "border-info-border bg-info-surface text-info",
+  },
+  DROP: {
+    label: "Dropping",
+    cls: "border-danger-border bg-danger-surface text-danger",
+  },
 }
 
 function prettifyType(type: string) {
   return type.replace(/[_-]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
+function DecisionButton({
+  label,
+  active,
+  activeCls,
+  onClick,
+}: {
+  label: string
+  active: boolean
+  activeCls: string
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onClick}
+      className={cn(
+        "min-h-11 rounded-control border px-4 font-ui text-button font-semibold transition-colors duration-[var(--motion-duration-fast)]",
+        active
+          ? activeCls
+          : "border-line text-content-secondary hover:border-line-strong"
+      )}
+    >
+      {label}
+    </button>
+  )
 }
 
 export default function SpeechReview({
@@ -88,9 +122,7 @@ export default function SpeechReview({
     const existing = sections.find((s) => s.id === sectionId)
     const note = status === "REWRITE" ? existing?.rewriteNote ?? null : null
     setSections((prev) =>
-      prev.map((s) =>
-        s.id === sectionId ? { ...s, status, rewriteNote: note } : s
-      )
+      prev.map((s) => (s.id === sectionId ? { ...s, status, rewriteNote: note } : s))
     )
     persist(sectionId, status, note)
   }
@@ -113,13 +145,12 @@ export default function SpeechReview({
     setError("")
 
     if (willRewrite) {
-      setWorking("Rewriting the sections you flagged — this takes a moment...")
+      setWorking("Rewriting the sections you flagged — this takes a moment…")
       try {
         const res = await fetch(`/api/projects/${projectId}/rewrite`, {
           method: "POST",
         })
         if (!res.ok) throw new Error("rewrite failed")
-        // Full navigation so the server component reloads the new sections
         window.location.href = `/project/${projectId}/review`
       } catch {
         setWorking(null)
@@ -128,7 +159,7 @@ export default function SpeechReview({
       return
     }
 
-    setWorking("Putting your final speech together...")
+    setWorking("Putting your final speech together…")
     try {
       const res = await fetch(`/api/projects/${projectId}/finalize`, {
         method: "POST",
@@ -142,152 +173,136 @@ export default function SpeechReview({
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-canvas">
       {working && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-          <div className="max-w-sm text-center space-y-4 px-4">
-            <div className="flex justify-center">
-              <div className="h-10 w-10 rounded-full border-4 border-primary border-t-transparent animate-spin" />
-            </div>
-            <p className="text-sm text-muted-foreground">{working}</p>
+        <div className="fixed inset-0 z-[var(--z-overlay)] flex items-center justify-center bg-canvas/80 backdrop-blur-sm">
+          <div className="flex max-w-sm flex-col items-center gap-4 px-4 text-center">
+            <div className="size-10 animate-spin rounded-full border-4 border-accent border-t-transparent" />
+            <p className="text-body-sm text-content-muted">{working}</p>
           </div>
         </div>
       )}
 
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <span className="text-sm font-medium text-muted-foreground">
-              {groomName}&apos;s speech
-            </span>
-            <a
-              href="/dashboard"
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              Save &amp; exit
-            </a>
-          </div>
-          <h1 className="text-2xl font-bold mb-2">Review your speech</h1>
-          <p className="text-muted-foreground">
+      <div className="mx-auto max-w-[40rem] px-4 py-8">
+        <StepHeader groomName={groomName} />
+
+        <div className="mb-6 flex flex-col gap-2">
+          <h1 className="font-ui text-page-title font-bold">
+            Review your speech
+          </h1>
+          <p className="text-body text-content-muted">
             Go through each part and decide what to keep, rewrite, or drop. Add a
             note on anything you&apos;d like changed.
           </p>
         </div>
 
         {/* Summary */}
-        <Card size="sm" className="mb-6">
-          <CardContent className="flex flex-wrap items-center justify-between gap-3">
-            <span className="text-sm text-muted-foreground">
-              {reviewedCount} of {sections.length} reviewed
-            </span>
-            <div className="flex items-center gap-2">
-              <Badge variant="default">{counts.good} keeping</Badge>
-              <Badge variant="secondary">{counts.rewrite} to rewrite</Badge>
-              <Badge variant="destructive">{counts.drop} dropping</Badge>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-card border border-line bg-surface p-4">
+          <span className="text-body-sm text-content-muted">
+            {reviewedCount} of {sections.length} reviewed
+          </span>
+          <div className="flex items-center gap-2 font-mono text-annotation">
+            <span className="text-success">{counts.good} keeping</span>
+            <span className="text-info">{counts.rewrite} to rewrite</span>
+            <span className="text-danger">{counts.drop} dropping</span>
+          </div>
+        </div>
 
         {/* Sections */}
-        <div className="space-y-4">
+        <div className="flex flex-col gap-4">
           {sections.map((section) => {
             const badge = statusBadge[section.status]
             return (
-              <Card key={section.id}>
-                <CardHeader>
-                  <div className="flex items-start justify-between gap-2">
-                    <CardTitle className="text-base leading-tight">
-                      {section.title || prettifyType(section.sectionType)}
-                    </CardTitle>
-                    <Badge variant={badge.variant} className="shrink-0">
-                      {badge.label}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/90">
-                    {section.content}
-                  </p>
-
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Button
-                      size="sm"
-                      variant={section.status === "GOOD" ? "default" : "outline"}
-                      onClick={() => setStatus(section.id, "GOOD")}
-                    >
-                      Keep
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant={
-                        section.status === "REWRITE" ? "secondary" : "outline"
-                      }
-                      onClick={() => setStatus(section.id, "REWRITE")}
-                    >
-                      Rewrite
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant={
-                        section.status === "DROP" ? "destructive" : "outline"
-                      }
-                      onClick={() => setStatus(section.id, "DROP")}
-                    >
-                      Drop
-                    </Button>
-                    {savingId === section.id && (
-                      <span className="text-xs text-muted-foreground">
-                        Saving...
-                      </span>
+              <div
+                key={section.id}
+                className="flex flex-col gap-4 rounded-card border border-line bg-surface p-5"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <h2 className="font-ui text-card-title font-semibold text-content-primary">
+                    {section.title || prettifyType(section.sectionType)}
+                  </h2>
+                  <span
+                    className={cn(
+                      "inline-flex shrink-0 items-center rounded-control border px-2 py-0.5 font-mono text-annotation",
+                      badge.cls
                     )}
-                  </div>
+                  >
+                    {badge.label}
+                  </span>
+                </div>
 
-                  {section.status === "REWRITE" && (
-                    <Textarea
-                      value={section.rewriteNote ?? ""}
-                      onChange={(e) => setNote(section.id, e.target.value)}
-                      onBlur={() => saveNote(section.id)}
-                      placeholder="What would you like changed? e.g. keep the story but make it shorter and less cheesy."
-                    />
+                <p className="whitespace-pre-wrap font-reading text-speech-editor text-content-primary">
+                  {section.content}
+                </p>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <DecisionButton
+                    label="Keep"
+                    active={section.status === "GOOD"}
+                    activeCls="border-success-border bg-success-surface text-success"
+                    onClick={() => setStatus(section.id, "GOOD")}
+                  />
+                  <DecisionButton
+                    label="Rewrite"
+                    active={section.status === "REWRITE"}
+                    activeCls="border-info-border bg-info-surface text-info"
+                    onClick={() => setStatus(section.id, "REWRITE")}
+                  />
+                  <DecisionButton
+                    label="Drop"
+                    active={section.status === "DROP"}
+                    activeCls="border-danger-border bg-danger-surface text-danger"
+                    onClick={() => setStatus(section.id, "DROP")}
+                  />
+                  {savingId === section.id && (
+                    <span className="font-mono text-annotation text-content-faint">
+                      Saving…
+                    </span>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+
+                {section.status === "REWRITE" && (
+                  <FreeTextAnswerField
+                    value={section.rewriteNote ?? ""}
+                    onChange={(e) => setNote(section.id, e.target.value)}
+                    onBlur={() => saveNote(section.id)}
+                    placeholder="What would you like changed? e.g. keep the story but make it shorter and less cheesy."
+                  />
+                )}
+              </div>
             )
           })}
         </div>
 
         {/* Footer */}
-        <div className="mt-8 space-y-3">
+        <div className="mt-8 flex flex-col gap-3">
           {rewriteCount > 0 && !canRewrite && (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-body-sm text-content-muted">
               You&apos;ve used both rewrite rounds — continuing will build your
               final speech from the current wording.
             </p>
           )}
           {allDropped && !willRewrite && (
-            <p className="text-sm text-destructive">
+            <p className="text-body-sm text-danger">
               You&apos;ve dropped every section — keep at least one to build a
               speech.
             </p>
           )}
-          {error && <p className="text-sm text-destructive">{error}</p>}
+          {error && <p className="text-body-sm text-danger">{error}</p>}
           <div className="flex items-center justify-between gap-3">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-body-sm text-content-muted">
               {allReviewed
                 ? "All parts reviewed."
                 : `${sections.length - reviewedCount} still to review.`}
             </p>
-            <Button
+            <PrimaryCTA
               onClick={handleContinue}
-              disabled={
-                !allReviewed || !!working || (!willRewrite && allDropped)
-              }
+              disabled={!allReviewed || !!working || (!willRewrite && allDropped)}
             >
               {willRewrite
                 ? `Rewrite ${rewriteCount} section${rewriteCount > 1 ? "s" : ""} →`
                 : "Finish & see my speech →"}
-            </Button>
+            </PrimaryCTA>
           </div>
         </div>
       </div>

@@ -1,9 +1,11 @@
 import { auth } from "@/lib/auth/config"
 import { getProjectById } from "@/lib/db/queries/projects"
 import { redirect } from "next/navigation"
-import MediaUploader from "@/components/shared/MediaUploader"
-import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { cn } from "@/lib/utils"
+import { primaryLinkClass, outlineLinkClass } from "@/lib/ui"
+import { StepHeader } from "@/components/flow/StepHeader"
+import MediaUploader from "@/components/shared/MediaUploader"
 
 export default async function MediaPage({
   params,
@@ -17,48 +19,33 @@ export default async function MediaPage({
   if (!project) redirect("/dashboard")
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-2xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-canvas">
+      <div className="mx-auto max-w-[var(--container-form)] px-4 py-8">
+        <StepHeader groomName={project.groomName} />
 
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <span className="text-sm font-medium text-muted-foreground">
-            {project.groomName}'s speech
+        <div className="mb-6 flex flex-col gap-2">
+          <span className="font-mono text-label uppercase text-occasion">
+            Optional
           </span>
-          <Link href="/dashboard">
-            <Button variant="ghost" size="sm">
-              Save &amp; exit
-            </Button>
-          </Link>
-        </div>
-
-        {/* Title */}
-        <div className="mb-8 space-y-2">
-          <h1 className="text-2xl font-bold">Add some photos</h1>
-          <p className="text-muted-foreground">
-            Got a photo that tells a story? Upload it here and we'll use it 
-            as context when writing the speech. This step is completely optional.
+          <h1 className="font-ui text-page-title font-bold">Add some photos</h1>
+          <p className="text-body text-content-muted">
+            Got a photo that tells a story? Upload it and we&apos;ll use it as
+            context when writing the speech. Completely optional.
           </p>
         </div>
 
-        {/* Uploader */}
-        <MediaUploader
-          projectId={project.id}
-          initialAssets={project.mediaAssets}
-        />
+        <MediaUploader projectId={project.id} initialAssets={project.mediaAssets} />
 
-        {/* Navigation */}
-        <div className="flex items-center justify-between mt-8">
-          <Link href={`/project/${id}/stories`}>
-            <Button variant="ghost">← Back</Button>
+        <div className="mt-8 flex items-center justify-between">
+          <Link
+            href={`/project/${id}/stories`}
+            className={cn(outlineLinkClass, "border-0 px-0 hover:bg-transparent")}
+          >
+            ← Back
           </Link>
-          <div className="flex gap-3">
-            <Link href={`/project/${id}/sample`}>
-              <Button>
-                Continue →
-              </Button>
-            </Link>
-          </div>
+          <Link href={`/project/${id}/sample`} className={primaryLinkClass}>
+            Continue →
+          </Link>
         </div>
       </div>
     </div>
