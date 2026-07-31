@@ -57,6 +57,8 @@ export default function SpeechReview({
   const rewriteCount = sections.filter((s) => s.status === "REWRITE").length
   const canRewrite = rewriteRound < MAX_REWRITE_ROUNDS
   const willRewrite = rewriteCount > 0 && canRewrite
+  const keptCount = sections.filter((s) => s.status !== "DROP").length
+  const allDropped = sections.length > 0 && keptCount === 0
   const counts = {
     good: sections.filter((s) => s.status === "GOOD").length,
     rewrite: rewriteCount,
@@ -263,6 +265,12 @@ export default function SpeechReview({
               final speech from the current wording.
             </p>
           )}
+          {allDropped && !willRewrite && (
+            <p className="text-sm text-destructive">
+              You&apos;ve dropped every section — keep at least one to build a
+              speech.
+            </p>
+          )}
           {error && <p className="text-sm text-destructive">{error}</p>}
           <div className="flex items-center justify-between gap-3">
             <p className="text-sm text-muted-foreground">
@@ -270,7 +278,12 @@ export default function SpeechReview({
                 ? "All parts reviewed."
                 : `${sections.length - reviewedCount} still to review.`}
             </p>
-            <Button onClick={handleContinue} disabled={!allReviewed || !!working}>
+            <Button
+              onClick={handleContinue}
+              disabled={
+                !allReviewed || !!working || (!willRewrite && allDropped)
+              }
+            >
               {willRewrite
                 ? `Rewrite ${rewriteCount} section${rewriteCount > 1 ? "s" : ""} →`
                 : "Finish & see my speech →"}

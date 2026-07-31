@@ -60,6 +60,13 @@ export async function POST(
       orderIndex: s.orderIndex,
     }))
 
+  if (segments.length === 0) {
+    return NextResponse.json(
+      { error: "Keep at least one section to build a speech." },
+      { status: 400 }
+    )
+  }
+
   const joined = segments.map((s) => s.content).join("\n\n")
 
   let fullText = joined

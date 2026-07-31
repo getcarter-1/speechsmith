@@ -38,7 +38,14 @@ export default function GeneratingPage() {
 
             if (status.state === "completed") {
               clearInterval(pollInterval)
-              router.push(`/project/${id}/review`)
+              if (status.projectStatus === "REVIEW") {
+                router.push(`/project/${id}/review`)
+              } else {
+                setError(
+                  status.latestLog ||
+                    "We couldn't finish the speech. Please try again."
+                )
+              }
             } else if (status.state === "failed") {
               clearInterval(pollInterval)
               setError("Generation failed. Please try again.")
@@ -62,10 +69,10 @@ export default function GeneratingPage() {
         <div className="max-w-md w-full text-center space-y-4">
           <p className="text-destructive font-medium">{error}</p>
           <button
-            onClick={() => router.push(`/project/${id}/sample`)}
+            onClick={() => router.push(`/project/${id}/interview`)}
             className="text-sm text-muted-foreground underline"
           >
-            Go back and try again
+            Back to the interview
           </button>
         </div>
       </div>

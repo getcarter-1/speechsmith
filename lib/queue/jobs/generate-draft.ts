@@ -58,6 +58,12 @@ export async function generateDraftJob(
     const result = await runPipeline(input, onProgress)
 
     if (!result.success) {
+      // Surface the reason (e.g. missing critical info) as the latest log so
+      // the generating screen can show it instead of a blank review.
+      await onProgress(
+        result.error ?? "We couldn't generate the speech from what we have.",
+        100
+      )
       await prisma.draft.update({
         where: { id: draftId },
         data: { status: "FAILED" },
