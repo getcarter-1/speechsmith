@@ -19,6 +19,8 @@ interface SpeechsmithCharacterProps {
   size?: CharacterSize
   speechType?: string
   decorative?: boolean
+  /** Extra multiplier on top of the size token (e.g. 0.75 to trim the panel). */
+  scale?: number
   alt?: string
   className?: string
 }
@@ -28,12 +30,13 @@ export function SpeechsmithCharacter({
   size = "panel",
   speechType = "best-man",
   decorative = true,
+  scale = 1,
   alt,
   className,
 }: SpeechsmithCharacterProps) {
   const assetId = `character-${speechType}-${state}-v01`
-  // Scale by the sensitivity-tier multiplier from tokens.css.
-  const width = `calc(var(${SIZE_VAR[size]}) * var(--character-scale))`
+  // Size token × sensitivity-tier multiplier (tokens.css) × local scale.
+  const width = `calc(var(${SIZE_VAR[size]}) * var(--character-scale) * ${scale})`
 
   return (
     <div

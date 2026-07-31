@@ -152,6 +152,13 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* Re-assert the two design tokens that collide with the shadcn @theme above,
+   so the design system wins (brand-blue accent, Plex mono). */
+@theme inline {
+  --color-accent: var(--colour-brand-accent);
+  --font-mono: var(--font-family-mono);
+}
+
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);

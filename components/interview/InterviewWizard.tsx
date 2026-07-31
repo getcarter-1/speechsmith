@@ -149,12 +149,12 @@ export default function InterviewWizard({
 
         <div className="flex justify-center gap-8">
           {/* desktop character rail */}
-          <aside className="hidden shrink-0 lg:block lg:w-[16.25rem]">
-            <SpeechsmithCharacter state="listening" size="panel" />
+          <aside className="hidden shrink-0 lg:block lg:w-[13.5rem]">
+            <SpeechsmithCharacter state="listening" size="panel" scale={0.75} />
           </aside>
 
           {/* form column */}
-          <div className="w-full max-w-[var(--container-form)]">
+          <div className="w-full max-w-[40rem]">
             <InterviewPromptCard
               question={currentQuestion}
               value={currentValue}

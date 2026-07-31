@@ -68,7 +68,7 @@ export function InterviewPromptCard({
       </div>
 
       {/* question — interface, not speech */}
-      <h2 className="text-balance font-ui text-prompt font-bold text-content-primary">
+      <h2 className="text-balance font-ui text-section-title font-bold text-content-primary">
         {question.question}
         {question.required && <span className="text-occasion"> *</span>}
       </h2>
