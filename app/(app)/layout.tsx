@@ -12,9 +12,5 @@ export default async function AppLayout({
     redirect("/login")
   }
 
-  return (
-    <div className="min-h-screen bg-background">
-      {children}
-    </div>
-  )
+  return <div className="min-h-screen bg-canvas">{children}</div>
 }

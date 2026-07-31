@@ -1,8 +1,7 @@
-import { auth } from "@/lib/auth/config"
+import { auth, signOut } from "@/lib/auth/config"
 import { getProjectsByUserId } from "@/lib/db/queries/projects"
-import { signOut } from "@/lib/auth/config"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
+import { SiteHeader } from "@/components/brand/SiteHeader"
+import { EmptyState } from "@/components/common/EmptyState"
 import ProjectCard from "@/components/dashboard/ProjectCard"
 import NewProjectDialog from "@/components/dashboard/NewProjectDialog"
 
@@ -10,56 +9,50 @@ export default async function DashboardPage() {
   const session = await auth()
   const projects = await getProjectsByUserId(session!.user!.id!)
 
-  return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b">
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold tracking-tight">SpeechSmith</h1>
-            <p className="text-xs text-muted-foreground">Best man speech writer</p>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground hidden sm:block">
-              {session?.user?.email}
-            </span>
-            <form
-              action={async () => {
-                "use server"
-                await signOut({ redirectTo: "/login" })
-              }}
-            >
-              <Button variant="outline" size="sm" type="submit">
-                Sign out
-              </Button>
-            </form>
-          </div>
-        </div>
-      </header>
+  const accountControls = (
+    <>
+      <span className="hidden text-body-sm text-content-muted sm:block">
+        {session?.user?.email}
+      </span>
+      <form
+        action={async () => {
+          "use server"
+          await signOut({ redirectTo: "/login" })
+        }}
+      >
+        <button
+          type="submit"
+          className="min-h-11 font-ui text-body-sm font-semibold text-content-muted hover:text-content-primary"
+        >
+          Sign out
+        </button>
+      </form>
+    </>
+  )
 
-      <main className="max-w-5xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
+  return (
+    <div className="min-h-screen bg-canvas">
+      <SiteHeader variant="app" right={accountControls} />
+      <main className="mx-auto max-w-[var(--container-app)] px-4 py-10">
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold">Your Speeches</h2>
-            <p className="text-muted-foreground mt-1">
-              Welcome back{session?.user?.name ? `, ${session.user.name}` : ""}
+            <h1 className="font-ui text-page-title font-bold">Your speeches</h1>
+            <p className="mt-1 text-body text-content-muted">
+              Welcome back
+              {session?.user?.name ? `, ${session.user.name}` : ""}
             </p>
           </div>
-          <NewProjectDialog />
+          {projects.length > 0 && <NewProjectDialog />}
         </div>
-
-        <Separator className="mb-8" />
 
         {projects.length === 0 ? (
-          <div className="rounded-lg border border-dashed p-12 text-center">
-            <h3 className="text-lg font-semibold mb-2">No speeches yet</h3>
-            <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-              Ready to write something brilliant? 
-              We'll guide you through every step.
-            </p>
-            <NewProjectDialog />
-          </div>
+          <EmptyState
+            heading="No speeches yet"
+            explanation="Ready to write something brilliant? We'll guide you through every step."
+            action={<NewProjectDialog />}
+          />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {projects.map((project) => (
               <ProjectCard
                 key={project.id}
