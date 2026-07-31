@@ -111,6 +111,7 @@ export default async function Home() {
                 size="hero"
                 scale={0.75}
                 decorative={false}
+                priority
                 alt="SpeechSmith, ready to help you write"
                 className="max-w-full"
               />
