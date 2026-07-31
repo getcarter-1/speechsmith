@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 
 interface FinalSpeechProps {
@@ -20,20 +20,6 @@ export default function FinalSpeech({
   const words = speech.trim() ? speech.trim().split(/\s+/).length : 0
   const minutes = Math.max(1, Math.round(words / 130)) // ~130 words/min spoken
 
-  const slug = groomName.trim().replace(/\s+/g, "-").toLowerCase() || "speech"
-
-  const download = () => {
-    const blob = new Blob([speech], { type: "text/plain;charset=utf-8" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = `${slug}-best-man-speech.txt`
-    document.body.appendChild(a)
-    a.click()
-    a.remove()
-    URL.revokeObjectURL(url)
-  }
-
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(speech)
@@ -43,6 +29,9 @@ export default function FinalSpeech({
       console.error("Copy failed")
     }
   }
+
+  const exportHref = (format: string) =>
+    `/api/projects/${projectId}/export?format=${format}`
 
   return (
     <div className="min-h-screen bg-background">
@@ -68,11 +57,25 @@ export default function FinalSpeech({
           </p>
         </div>
 
-        {/* Actions */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          <Button onClick={download}>Download (.txt)</Button>
+        {/* Downloads */}
+        <div className="flex flex-wrap items-center gap-2 mb-6">
+          <a href={exportHref("pdf")} className={buttonVariants()}>
+            Download PDF
+          </a>
+          <a
+            href={exportHref("docx")}
+            className={buttonVariants({ variant: "outline" })}
+          >
+            Word (.docx)
+          </a>
+          <a
+            href={exportHref("txt")}
+            className={buttonVariants({ variant: "outline" })}
+          >
+            Text (.txt)
+          </a>
           <Button variant="outline" onClick={copy}>
-            {copied ? "Copied ✓" : "Copy text"}
+            {copied ? "Copied ✓" : "Copy"}
           </Button>
           <a
             href={`/project/${projectId}/review`}
@@ -90,10 +93,6 @@ export default function FinalSpeech({
             </p>
           </CardContent>
         </Card>
-
-        <p className="text-center text-xs text-muted-foreground mt-6">
-          PDF and Word downloads are coming soon.
-        </p>
       </div>
     </div>
   )
