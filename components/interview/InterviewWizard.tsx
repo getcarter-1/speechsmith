@@ -4,7 +4,6 @@ import { useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import {
   INTERVIEW_STAGES,
-  INTERVIEW_QUESTIONS,
   InterviewStage,
   getQuestionsByStage,
   getStageIndex,
@@ -23,8 +22,6 @@ interface InterviewWizardProps {
   initialQuestionIndex?: number
   initialAnswers?: Record<string, string | string[] | number>
 }
-
-const TOTAL_QUESTIONS = INTERVIEW_QUESTIONS.length
 
 export default function InterviewWizard({
   projectId,
@@ -45,12 +42,10 @@ export default function InterviewWizard({
   const isLastStage = currentStage === INTERVIEW_STAGES[INTERVIEW_STAGES.length - 1].id
   const currentValue = answers[currentQuestion?.id] ?? ""
 
-  // Global position across all stages, for the "Q06 / 39" counter + progress.
-  const priorCount = INTERVIEW_STAGES.slice(0, getStageIndex(currentStage)).reduce(
-    (n, s) => n + getQuestionsByStage(s.id).length,
-    0
-  )
-  const globalIndex = priorCount + questionIndex + 1
+  // Per-section counter — friendlier than "1 of 39".
+  const stageMeta = INTERVIEW_STAGES[getStageIndex(currentStage)]
+  const sectionPos = questionIndex + 1
+  const sectionTotal = stageQuestions.length
 
   const saveAnswer = useCallback(
     async (questionId: string, value: string | string[] | number) => {
@@ -132,7 +127,7 @@ export default function InterviewWizard({
 
   if (!currentQuestion) return null
 
-  const counter = `Q${String(globalIndex).padStart(2, "0")} / ${TOTAL_QUESTIONS}`
+  const counter = `${stageMeta.label} · ${sectionPos} of ${sectionTotal}`
 
   return (
     <div className="min-h-screen bg-canvas">
@@ -160,8 +155,8 @@ export default function InterviewWizard({
               value={currentValue}
               onChange={handleChange}
               counter={counter}
-              progressValue={globalIndex}
-              progressMax={TOTAL_QUESTIONS}
+              progressValue={sectionPos}
+              progressMax={sectionTotal}
             />
 
             {/* navigation */}
