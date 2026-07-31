@@ -79,7 +79,7 @@ export default async function Home() {
       <section className="border-b border-line bg-surface">
         <div className="mx-auto grid max-w-[var(--container-app)] items-center gap-8 px-4 py-10 lg:grid-cols-[1.5fr_1fr] lg:py-16">
           <div className="flex flex-col items-start gap-5">
-            <span className="inline-flex items-center rounded-pill bg-occasion-subtle px-3 py-1 font-ui text-label font-bold uppercase tracking-wide text-occasion">
+            <span className="inline-flex items-center rounded-pill bg-occasion-subtle px-4 py-1.5 font-ui text-body font-bold uppercase tracking-wide text-occasion">
               Best man speeches
             </span>
             <h1 className="text-balance font-ui text-display font-bold text-content-primary">
@@ -103,15 +103,18 @@ export default async function Home() {
               needed
             </p>
           </div>
-          <div className="flex justify-center bg-canvas p-4 lg:justify-end lg:p-6">
-            <SpeechsmithCharacter
-              state="welcome"
-              size="hero"
-              scale={0.75}
-              decorative={false}
-              alt="SpeechSmith, ready to help you write"
-              className="max-w-full"
-            />
+          <div className="flex justify-center lg:justify-end">
+            {/* box hugs the character so it shrinks with it */}
+            <div className="w-fit bg-canvas p-5 lg:p-6">
+              <SpeechsmithCharacter
+                state="welcome"
+                size="hero"
+                scale={0.75}
+                decorative={false}
+                alt="SpeechSmith, ready to help you write"
+                className="max-w-full"
+              />
+            </div>
           </div>
         </div>
       </section>
